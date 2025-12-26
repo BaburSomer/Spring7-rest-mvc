@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.babsom.spring7restmvc.model.Beer;
@@ -25,44 +24,46 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/beer")
 public class BeerController {
+	static final String BEER_PATH = "/api/v1/beer";
+	static final String BEER_PATH_ID = BEER_PATH + "/{beerId}";
+
 	private final BeerService service;
 	
-	@GetMapping
+	@GetMapping(BEER_PATH)
 	public List<Beer> listBeers() {
 		return service.listBeers();
 	}
 	
-	@GetMapping("/{beerId}")
+	@GetMapping(BEER_PATH_ID)
 	public Beer getByOid(@PathVariable("beerId") UUID beerId) { // eğer hem requestmapping'deki isim hem de parametre ismi aynı olursa aslında gerek yokmuş buna. 
 		log.debug("Beer saerching by id: " + beerId);				// denedim çalışmadı
 		return service.getBeerByOid(beerId);
 	}
 	
-	@PostMapping
+	@PostMapping(BEER_PATH)
 	public ResponseEntity<HttpStatus> handlePost(@RequestBody Beer beer) {
 		Beer newBeer = service.insert(beer);
 		
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Location", "/api/v1/beer/" + newBeer.getOid().toString());
+		headers.add("Location", BEER_PATH + "/" + newBeer.getOid().toString());
 		
 		return new ResponseEntity<>(headers, HttpStatus.CREATED);
 	}
 	
-	@PutMapping("/{beerId}")
+	@PutMapping(BEER_PATH_ID)
 	public ResponseEntity<HttpStatus> updateById(@PathVariable("beerId")UUID beerId,  @RequestBody Beer beer) {
 		service.update(beerId, beer);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 	
-	@DeleteMapping("/{beerId}")
+	@DeleteMapping(BEER_PATH_ID)
 	public ResponseEntity<HttpStatus> deleteById(@PathVariable("beerId")UUID beerId) {
 		service.deleteById(beerId);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 	
-	@PatchMapping("/{beerId}")
+	@PatchMapping(BEER_PATH_ID)
 	public ResponseEntity<HttpStatus> patchById(@PathVariable("beerId")UUID beerId,  @RequestBody Beer beer) {
 		service.patchById(beerId, beer);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
