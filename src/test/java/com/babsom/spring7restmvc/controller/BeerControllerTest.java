@@ -71,7 +71,7 @@ class BeerControllerTest {
 		Map<String, Object> beerMap = new HashMap<>();
 		beerMap.put("name", "New Name");
 
-		mockMvc.perform(patch(BeerController.BEER_PATH + "/" + testObject.getOid()).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
+		mockMvc.perform(patch(BeerController.BEER_PATH_ID, testObject.getOid()).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(beerMap))).andExpect(status().isNoContent());
 
 		verify(service).patchById(uuidCaptor.capture(), beerCaptor.capture());
@@ -83,7 +83,7 @@ class BeerControllerTest {
 	void testDelete() throws Exception {
 		Beer testObject = beers.get(0);
 
-		mockMvc.perform(delete(BeerController.BEER_PATH + "/" + testObject.getOid()).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
+		mockMvc.perform(delete(BeerController.BEER_PATH_ID, testObject.getOid()).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
 
 		verify(service).deleteById(uuidCaptor.capture());
 		assertThat(testObject.getOid()).isEqualTo(uuidCaptor.getValue());
@@ -93,7 +93,7 @@ class BeerControllerTest {
 	void testUpdate() throws Exception {
 		Beer testObject = beers.get(0);
 
-		mockMvc.perform(put(BeerController.BEER_PATH + "/" + testObject.getOid()).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(put(BeerController.BEER_PATH_ID, testObject.getOid()).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(testObject))).andExpect(status().isNoContent());
 
 		verify(service).update(any(UUID.class), any(Beer.class));
@@ -135,7 +135,7 @@ class BeerControllerTest {
 
 		given(service.getBeerByOid(testBeer.getOid())).willReturn(testBeer);
 
-		mockMvc.perform(get(BeerController.BEER_PATH + "/" + testBeer.getOid()).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+		mockMvc.perform(get(BeerController.BEER_PATH_ID, testBeer.getOid()).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.oid", is(testBeer.getOid().toString()))).andExpect(jsonPath("$.name", is(testBeer.getName())));
 	}
