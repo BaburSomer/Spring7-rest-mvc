@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.babsom.spring7restmvc.model.Customer;
+import com.babsom.spring7restmvc.model.CustomerDTO;
 import com.babsom.spring7restmvc.service.CustomerService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -19,48 +20,48 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
-	private Map<UUID, Customer>   customersByOid;
-	private Map<String, Customer> customersByFirstName;
+	private Map<UUID, CustomerDTO>   customersByOid;
+	private Map<String, CustomerDTO> customersByFirstName;
 
 	public CustomerServiceImpl() {
 		this.customersByFirstName = new HashMap<>();
 		this.customersByOid       = new HashMap<>();
 
-		Customer customer = Customer.builder().oid(UUID.randomUUID()).firstName("Babur").lastName("Somer").version(1).created(LocalDateTime.now())
+		CustomerDTO customer = CustomerDTO.builder().oid(UUID.randomUUID()).firstName("Babur").lastName("Somer").version(1).created(LocalDateTime.now())
 				.build();
 		this.customersByFirstName.put(customer.getFirstName(), customer);
 		this.customersByOid.put(customer.getOid(), customer);
 
-		customer = Customer.builder().oid(UUID.randomUUID()).firstName("Elif").lastName("Somer").version(2).created(LocalDateTime.now()).build();
+		customer = CustomerDTO.builder().oid(UUID.randomUUID()).firstName("Elif").lastName("Somer").version(2).created(LocalDateTime.now()).build();
 		this.customersByFirstName.put(customer.getFirstName(), customer);
 		this.customersByOid.put(customer.getOid(), customer);
 
-		customer = Customer.builder().oid(UUID.randomUUID()).firstName("Ayse").lastName("Emiroğlu").version(3).created(LocalDateTime.now()).build();
+		customer = CustomerDTO.builder().oid(UUID.randomUUID()).firstName("Ayse").lastName("Emiroğlu").version(3).created(LocalDateTime.now()).build();
 		this.customersByFirstName.put(customer.getFirstName(), customer);
 		this.customersByOid.put(customer.getOid(), customer);
 
-		customer = Customer.builder().oid(UUID.randomUUID()).firstName("Giray").lastName("Emiroğlu").version(4).created(LocalDateTime.now()).build();
+		customer = CustomerDTO.builder().oid(UUID.randomUUID()).firstName("Giray").lastName("Emiroğlu").version(4).created(LocalDateTime.now()).build();
 		this.customersByFirstName.put(customer.getFirstName(), customer);
 		this.customersByOid.put(customer.getOid(), customer);
 	}
 
 	@Override
-	public Customer getCustomerByOid(UUID oid) {
-		return this.customersByOid.get(oid);
+	public Optional<CustomerDTO> getCustomerByOid(UUID oid) {
+		return Optional.of(this.customersByOid.get(oid));
 	}
 
 	@Override
-	public Customer getCustomerByFirstName(String firstName) {
-		return this.customersByFirstName.get(firstName);
+	public Optional<CustomerDTO> getCustomerByFirstName(String firstName) {
+		return Optional.of(this.customersByFirstName.get(firstName));
 	}
 
 	@Override
-	public List<Customer> listCustomers() {
+	public List<CustomerDTO> listCustomers() {
 		return new ArrayList<>(customersByOid.values());
 	}
 
 	@Override
-	public Customer create(Customer customer) {
+	public CustomerDTO create(CustomerDTO customer) {
 		customer.setOid(UUID.randomUUID());
 		customer.setCreated(LocalDateTime.now());
 		this.customersByOid.put(customer.getOid(), customer);
@@ -69,8 +70,8 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public void update(UUID customerId, Customer customer) {
-		Customer cust = this.customersByOid.get(customerId);
+	public void update(UUID customerId, CustomerDTO customer) {
+		CustomerDTO cust = this.customersByOid.get(customerId);
 		this.customersByFirstName.remove(cust.getFirstName());
 		cust.setFirstName(customer.getFirstName());
 		cust.setLastName(customer.getLastName());
@@ -81,13 +82,13 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	public void deleteByOid(UUID customerId) {
-		Customer cust = this.customersByOid.remove(customerId);
+		CustomerDTO cust = this.customersByOid.remove(customerId);
 		this.customersByFirstName.remove(cust.getFirstName());
 	}
 
 	@Override
-	public void patchById(UUID customerId, Customer customer) {
-		Customer cust = this.customersByOid.get(customerId);
+	public void patchById(UUID customerId, CustomerDTO customer) {
+		CustomerDTO cust = this.customersByOid.get(customerId);
 		this.customersByFirstName.remove(cust.getFirstName());
 
 		if (StringUtils.hasText(customer.getFirstName())) {

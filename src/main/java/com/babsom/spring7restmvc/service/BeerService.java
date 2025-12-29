@@ -1,22 +1,23 @@
 package com.babsom.spring7restmvc.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-import com.babsom.spring7restmvc.model.Beer;
+import com.babsom.spring7restmvc.model.BeerDTO;
 
 public interface BeerService {
 
-	Beer getBeerByOid(UUID oid);
+	Optional<BeerDTO> getBeerByOid(UUID oid);
 
-	List<Beer> listBeers();
+	List<BeerDTO> listBeers();
 
-	Beer insert(Beer beer);
+	BeerDTO insert(BeerDTO beer);
 
-	void update(UUID beerId, Beer beer);
+	void update(UUID beerId, BeerDTO beer);
 
 	void deleteById(UUID beerId);
 
-	void patchById(UUID beerId, Beer beer);
+	void patchById(UUID beerId, BeerDTO beer);
 
 }

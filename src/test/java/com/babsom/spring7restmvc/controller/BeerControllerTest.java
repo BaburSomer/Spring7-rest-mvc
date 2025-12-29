@@ -17,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +31,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import com.babsom.spring7restmvc.model.Beer;
+import com.babsom.spring7restmvc.model.BeerDTO;
 import com.babsom.spring7restmvc.service.BeerService;
 import com.babsom.spring7restmvc.service.impl.BeerServiceImpl;
 
@@ -51,22 +52,32 @@ class BeerControllerTest {
 	@Captor
 	ArgumentCaptor<UUID> uuidCaptor;
 	@Captor
-	ArgumentCaptor<Beer> beerCaptor;
+	ArgumentCaptor<BeerDTO> beerCaptor;
 
 	BeerServiceImpl serviceImpl;
-	List<Beer>      beers;
+	List<BeerDTO>      beers;
 
 	@BeforeEach
 	void setUp() {
 		serviceImpl = new BeerServiceImpl();
 		beers       = serviceImpl.listBeers();
 		uuidCaptor  = ArgumentCaptor.forClass(UUID.class);
-		beerCaptor  = ArgumentCaptor.forClass(Beer.class);
+		beerCaptor  = ArgumentCaptor.forClass(BeerDTO.class);
 	}
 
 	@Test
+	void testGetBeerByOidNotFound () throws Exception {
+
+		given(service.getBeerByOid(any(UUID.class))).willReturn(Optional.empty()); // bu Optional ile çalışırken
+//		given(service.getBeerByOid(any(UUID.class))).willThrow(NotFoundException.class); bu exception handler'ler ile çalışırken
+		
+		mockMvc.perform(get(BeerController.BEER_PATH_ID, UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
+		.andExpect(status().isNotFound());
+	}
+	
+	@Test
 	void testPatch() throws Exception {
-		Beer testObject = beers.get(0);
+		BeerDTO testObject = beers.get(0);
 
 		Map<String, Object> beerMap = new HashMap<>();
 		beerMap.put("name", "New Name");
@@ -81,7 +92,7 @@ class BeerControllerTest {
 
 	@Test
 	void testDelete() throws Exception {
-		Beer testObject = beers.get(0);
+		BeerDTO testObject = beers.get(0);
 
 		mockMvc.perform(delete(BeerController.BEER_PATH_ID, testObject.getOid()).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
 
@@ -91,17 +102,17 @@ class BeerControllerTest {
 
 	@Test
 	void testUpdate() throws Exception {
-		Beer testObject = beers.get(0);
+		BeerDTO testObject = beers.get(0);
 
 		mockMvc.perform(put(BeerController.BEER_PATH_ID, testObject.getOid()).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(testObject))).andExpect(status().isNoContent());
 
-		verify(service).update(any(UUID.class), any(Beer.class));
+		verify(service).update(any(UUID.class), any(BeerDTO.class));
 	}
 
 	@Test
 	void testCreateNewBeer() throws Exception { // tam doğru değil çünkü insert'e gitmedi.
-		Beer testObject = beers.get(0).clone();
+		BeerDTO testObject = beers.get(0).clone();
 
 		System.out.println(objectMapper.writeValueAsString(testObject));
 		testObject.setOid(null);
@@ -109,8 +120,8 @@ class BeerControllerTest {
 		testObject.setUpdated(null);
 		testObject.setName(testObject.getName() + " - CREATED");
 
-		given(service.insert(any(Beer.class))).willReturn(beers.get(1));
-//		given(service.insert(any(Beer.class))).willReturn(testObject);
+		given(service.insert(any(BeerDTO.class))).willReturn(beers.get(1));
+//		given(service.insert(any(BeerDTO.class))).willReturn(testObject);
 
 		mockMvc.perform(post(BeerController.BEER_PATH).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(testObject))).andExpect(status().isCreated()).andExpect(header().exists("Location"))
@@ -118,7 +129,6 @@ class BeerControllerTest {
 //				.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
 //				.andExpect(jsonPath("$.length()", is(beers.size())))
 		;
-		System.out.println();
 	}
 
 	@Test
@@ -131,9 +141,9 @@ class BeerControllerTest {
 
 	@Test
 	void testGetBeerByOid() throws Exception {
-		Beer testBeer = beers.get(0);
+		BeerDTO testBeer = beers.get(0);
 
-		given(service.getBeerByOid(testBeer.getOid())).willReturn(testBeer);
+		given(service.getBeerByOid(testBeer.getOid())).willReturn(Optional.of(testBeer));
 
 		mockMvc.perform(get(BeerController.BEER_PATH_ID, testBeer.getOid()).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))

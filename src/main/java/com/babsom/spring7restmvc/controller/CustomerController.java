@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.babsom.spring7restmvc.model.Customer;
+import com.babsom.spring7restmvc.model.CustomerDTO;
 import com.babsom.spring7restmvc.service.CustomerService;
 
 import lombok.RequiredArgsConstructor;
@@ -33,25 +33,25 @@ public class CustomerController {
 	private final CustomerService service;
 
 	@GetMapping(CUSTOMER_PATH)
-	public List<Customer> listCustomers() {
+	public List<CustomerDTO> listCustomers() {
 		return service.listCustomers();
 	}
 
 	@GetMapping(CUSTOMER_PATH_ID)
-	public Customer getByOid(@PathVariable("customerId") UUID customerId) {
-		log.debug("Customer saerching by id: " + customerId);
-		return service.getCustomerByOid(customerId);
+	public CustomerDTO getByOid(@PathVariable("customerId") UUID customerId) {
+		log.debug("CustomerDTO saerching by id: " + customerId);
+		return service.getCustomerByOid(customerId).orElseThrow(NotFoundException::new);
 	}
 
 	@GetMapping(CUSTOMER_PATH_FN)
-	public Customer getCustomerByFirstName(@PathVariable("firstName") String firstName) {
-		log.debug("Customer searching by firstName: " + firstName);
-		return service.getCustomerByFirstName(firstName);
+	public CustomerDTO getCustomerByFirstName(@PathVariable("firstName") String firstName) {
+		log.debug("CustomerDTO searching by firstName: " + firstName);
+		return service.getCustomerByFirstName(firstName).orElseThrow(NotFoundException::new);
 	}
 
 	@PostMapping(CUSTOMER_PATH)
-	public ResponseEntity<HttpStatus> handlePost(@RequestBody Customer customer) {
-		Customer newCustomer = service.create(customer);
+	public ResponseEntity<HttpStatus> handlePost(@RequestBody CustomerDTO customer) {
+		CustomerDTO newCustomer = service.create(customer);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Location", CustomerController.CUSTOMER_PATH + "/" + newCustomer.getOid().toString());
@@ -60,7 +60,7 @@ public class CustomerController {
 	}
 
 	@PutMapping(CUSTOMER_PATH_ID)
-	public ResponseEntity<HttpStatus> updateById(@PathVariable("customerId") UUID customerId, @RequestBody Customer customer) {
+	public ResponseEntity<HttpStatus> updateById(@PathVariable("customerId") UUID customerId, @RequestBody CustomerDTO customer) {
 		service.update(customerId, customer);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
@@ -72,7 +72,7 @@ public class CustomerController {
 	}
 
 	@PatchMapping(CUSTOMER_PATH_ID)
-	public ResponseEntity<HttpStatus> patchById(@PathVariable("customerId") UUID customerId, @RequestBody Customer customer) {
+	public ResponseEntity<HttpStatus> patchById(@PathVariable("customerId") UUID customerId, @RequestBody CustomerDTO customer) {
 		service.patchById(customerId, customer);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}

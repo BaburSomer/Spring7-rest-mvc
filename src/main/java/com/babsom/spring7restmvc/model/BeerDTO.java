@@ -12,12 +12,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import tools.jackson.databind.annotation.JsonDeserialize;
 
-@JsonDeserialize(builder = Beer.BeerBuilder.class)
+@JsonDeserialize(builder = BeerDTO.BeerDTOBuilder.class)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Beer {
+public class BeerDTO {
 
 	@JsonProperty("oid")
 	private UUID          oid;
@@ -39,8 +39,8 @@ public class Beer {
 	private LocalDateTime updated;
 
 	@Override
-	public Beer clone() throws CloneNotSupportedException {
-		Beer cloned = new Beer();
+	public BeerDTO clone() throws CloneNotSupportedException {
+		BeerDTO cloned = new BeerDTO();
 
 		cloned.setCreated(created);
 		cloned.setName(name);

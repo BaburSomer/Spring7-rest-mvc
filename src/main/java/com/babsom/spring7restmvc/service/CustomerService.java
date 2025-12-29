@@ -1,23 +1,24 @@
 package com.babsom.spring7restmvc.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-import com.babsom.spring7restmvc.model.Customer;
+import com.babsom.spring7restmvc.model.CustomerDTO;
 
 public interface CustomerService {
 
-	Customer getCustomerByOid(UUID oid);
+	Optional<CustomerDTO> getCustomerByOid(UUID oid);
 
-	Customer getCustomerByFirstName(String firstName);
+	Optional<CustomerDTO> getCustomerByFirstName(String firstName);
 
-	List<Customer> listCustomers();
+	List<CustomerDTO> listCustomers();
 
-	Customer create(Customer customer);
+	CustomerDTO create(CustomerDTO customer);
 
-	void update(UUID customerId, Customer customer);
+	void update(UUID customerId, CustomerDTO customer);
 
 	void deleteByOid(UUID customerId);
 
-	void patchById(UUID customerId, Customer customer);
+	void patchById(UUID customerId, CustomerDTO customer);
 }

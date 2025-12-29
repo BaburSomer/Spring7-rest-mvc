@@ -9,12 +9,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
-//Beer de Json - Annotationlar ile bir çözüm var. Ben de her ikisi de sorunsun çalışıyor
+//BeerDTO de Json - Annotationlar ile bir çözüm var. Ben de her ikisi de sorunsuz çalışıyor
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Customer {
+public class CustomerDTO {
 
 	private UUID          oid;
 	private String        firstName;
@@ -24,8 +24,8 @@ public class Customer {
 	private LocalDateTime updated;
 
 	@Override
-	public Customer clone() throws CloneNotSupportedException {
-		Customer cloned = new Customer();
+	public CustomerDTO clone() throws CloneNotSupportedException {
+		CustomerDTO cloned = new CustomerDTO();
 		cloned.setCreated(created);
 		cloned.setFirstName(firstName);
 		cloned.setLastName(lastName);

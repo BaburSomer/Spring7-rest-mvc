@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.babsom.spring7restmvc.model.Beer;
+import com.babsom.spring7restmvc.model.BeerDTO;
 import com.babsom.spring7restmvc.service.BeerService;
 
 import lombok.RequiredArgsConstructor;
@@ -31,19 +32,19 @@ public class BeerController {
 	private final BeerService service;
 	
 	@GetMapping(BEER_PATH)
-	public List<Beer> listBeers() {
+	public List<BeerDTO> listBeers() {
 		return service.listBeers();
 	}
 	
 	@GetMapping(BEER_PATH_ID)
-	public Beer getByOid(@PathVariable("beerId") UUID beerId) { // eğer hem requestmapping'deki isim hem de parametre ismi aynı olursa aslında gerek yokmuş buna. 
-		log.debug("Beer saerching by id: " + beerId);				// denedim çalışmadı
-		return service.getBeerByOid(beerId);
+	public BeerDTO getByOid(@PathVariable("beerId") UUID beerId) { // eğer hem requestmapping'deki isim hem de parametre ismi aynı olursa aslında gerek yokmuş buna. 
+		log.debug("BeerDTO saerching by id: " + beerId);				// denedim çalışmadı
+		return service.getBeerByOid(beerId).orElseThrow(NotFoundException::new);
 	}
 	
 	@PostMapping(BEER_PATH)
-	public ResponseEntity<HttpStatus> handlePost(@RequestBody Beer beer) {
-		Beer newBeer = service.insert(beer);
+	public ResponseEntity<HttpStatus> handlePost(@RequestBody BeerDTO beer) {
+		BeerDTO newBeer = service.insert(beer);
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Location", BEER_PATH + "/" + newBeer.getOid().toString());
@@ -52,7 +53,7 @@ public class BeerController {
 	}
 	
 	@PutMapping(BEER_PATH_ID)
-	public ResponseEntity<HttpStatus> updateById(@PathVariable("beerId")UUID beerId,  @RequestBody Beer beer) {
+	public ResponseEntity<HttpStatus> updateById(@PathVariable("beerId")UUID beerId,  @RequestBody BeerDTO beer) {
 		service.update(beerId, beer);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
@@ -64,8 +65,14 @@ public class BeerController {
 	}
 	
 	@PatchMapping(BEER_PATH_ID)
-	public ResponseEntity<HttpStatus> patchById(@PathVariable("beerId")UUID beerId,  @RequestBody Beer beer) {
+	public ResponseEntity<HttpStatus> patchById(@PathVariable("beerId")UUID beerId,  @RequestBody BeerDTO beer) {
 		service.patchById(beerId, beer);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+	
+	@ExceptionHandler(NotFoundException.class)
+	public ResponseEntity<HttpStatus> handleNotFoundException () {
+		System.out.println("I am in handleNotFoundException () in BeerController");
+		return ResponseEntity.notFound().build();
 	}
 }

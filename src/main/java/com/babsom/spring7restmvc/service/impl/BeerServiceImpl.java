@@ -6,12 +6,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.babsom.spring7restmvc.model.Beer;
+import com.babsom.spring7restmvc.model.BeerDTO;
 import com.babsom.spring7restmvc.model.BeerStyle;
 import com.babsom.spring7restmvc.service.BeerService;
 
@@ -21,37 +22,37 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class BeerServiceImpl implements BeerService {
 
-	private Map<UUID, Beer>      beers;
+	private Map<UUID, BeerDTO>      beers;
 
 	public BeerServiceImpl() {
 		this.beers = new HashMap<>();
 
-		Beer beer = Beer.builder().oid(UUID.randomUUID()).name("Efes Pilsen").version(1).style(BeerStyle.PILSNER).upc("211654")
+		BeerDTO beer = BeerDTO.builder().oid(UUID.randomUUID()).name("Efes Pilsen").version(1).style(BeerStyle.PILSNER).upc("211654")
 				.price(new BigDecimal("70.99")).quantityOnHand(122).created(LocalDateTime.now()).build();
 		this.beers.put(beer.getOid(), beer);
 
-		beer = Beer.builder().oid(UUID.randomUUID()).name("Bomonti").version(1).style(BeerStyle.WHEAT).upc("568994").price(new BigDecimal("75.49"))
+		beer = BeerDTO.builder().oid(UUID.randomUUID()).name("Bomonti").version(1).style(BeerStyle.WHEAT).upc("568994").price(new BigDecimal("75.49"))
 				.quantityOnHand(500).created(LocalDateTime.now()).build();
 		this.beers.put(beer.getOid(), beer);
 
-		beer = Beer.builder().oid(UUID.randomUUID()).name("Zıkkım").version(1).style(BeerStyle.IPA).upc("123789").price(new BigDecimal("58.44"))
+		beer = BeerDTO.builder().oid(UUID.randomUUID()).name("Zıkkım").version(1).style(BeerStyle.IPA).upc("123789").price(new BigDecimal("58.44"))
 				.quantityOnHand(25).created(LocalDateTime.now()).build();
 		this.beers.put(beer.getOid(), beer);
 	}
 
 	@Override
-	public List<Beer> listBeers() {
+	public List<BeerDTO> listBeers() {
 		return new ArrayList<>(beers.values());
 	}
 
 	@Override
-	public Beer getBeerByOid(UUID oid) {
-		log.debug("Get Beer by oid is called in service");
-		return beers.get(oid);
+	public Optional<BeerDTO> getBeerByOid(UUID oid) {
+		log.debug("Get BeerDTO by oid is called in service");
+		return Optional.of(beers.get(oid));
 	}
 
 	@Override
-	public Beer insert(Beer beer) {
+	public BeerDTO insert(BeerDTO beer) {
 		beer.setOid(UUID.randomUUID());
 		beer.setCreated(LocalDateTime.now());
 		this.beers.put(beer.getOid(), beer);
@@ -59,8 +60,8 @@ public class BeerServiceImpl implements BeerService {
 	}
 
 	@Override
-	public void update(UUID beerId, Beer beer) {
-		Beer b = beers.get(beerId);
+	public void update(UUID beerId, BeerDTO beer) {
+		BeerDTO b = beers.get(beerId);
 		b.setName(beer.getName());
 		b.setPrice(beer.getPrice());
 		b.setQuantityOnHand(beer.getQuantityOnHand());
@@ -77,8 +78,8 @@ public class BeerServiceImpl implements BeerService {
 	}
 
 	@Override
-	public void patchById(UUID beerId, Beer beer) {
-		Beer b = beers.get(beerId);
+	public void patchById(UUID beerId, BeerDTO beer) {
+		BeerDTO b = beers.get(beerId);
 		
 		if (StringUtils.hasText(beer.getName())) {
 			b.setName(beer.getName());
