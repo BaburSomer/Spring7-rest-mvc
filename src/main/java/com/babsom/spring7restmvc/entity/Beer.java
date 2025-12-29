@@ -26,7 +26,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
+@Entity(name = "beers")
 public class Beer {
 	@Id
 	@GeneratedValue(generator = "UUID")

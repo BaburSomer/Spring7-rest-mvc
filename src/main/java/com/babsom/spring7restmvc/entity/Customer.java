@@ -4,8 +4,10 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Version;
@@ -22,6 +24,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EnableJpaRepositories
+@Entity(name = "customers")
 public class Customer {
 
 	@Id
