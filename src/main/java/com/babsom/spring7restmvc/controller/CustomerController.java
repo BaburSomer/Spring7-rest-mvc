@@ -51,7 +51,7 @@ public class CustomerController {
 
 	@PostMapping(CUSTOMER_PATH)
 	public ResponseEntity<HttpStatus> handlePost(@RequestBody CustomerDTO customer) {
-		CustomerDTO newCustomer = service.create(customer);
+		CustomerDTO newCustomer = service.insert(customer);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Location", CustomerController.CUSTOMER_PATH + "/" + newCustomer.getOid().toString());
@@ -61,19 +61,25 @@ public class CustomerController {
 
 	@PutMapping(CUSTOMER_PATH_ID)
 	public ResponseEntity<HttpStatus> updateById(@PathVariable("customerId") UUID customerId, @RequestBody CustomerDTO customer) {
-		service.update(customerId, customer);
+		if (service.update(customerId, customer).isEmpty()) {
+			throw new NotFoundException("Customer with id <<< " + customerId + " >>> not found");
+		}
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
 	@DeleteMapping(CUSTOMER_PATH_ID)
 	public ResponseEntity<HttpStatus> deleteById(@PathVariable("customerId") UUID customerId) {
-		service.deleteByOid(customerId);
+		if (!service.deleteByOid(customerId)) {
+			throw new NotFoundException("Customer with id <<< " + customerId + " >>> not found");
+		}
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
 	@PatchMapping(CUSTOMER_PATH_ID)
 	public ResponseEntity<HttpStatus> patchById(@PathVariable("customerId") UUID customerId, @RequestBody CustomerDTO customer) {
-		service.patchById(customerId, customer);
+		if (service.patchById(customerId, customer).isEmpty()) {
+			throw new NotFoundException("Customer with id <<< " + customerId + " >>> not found");
+		}
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 

@@ -1,4 +1,4 @@
-package com.babsom.spring7_rest_mvc;
+package com.babsom.spring7restmvc;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

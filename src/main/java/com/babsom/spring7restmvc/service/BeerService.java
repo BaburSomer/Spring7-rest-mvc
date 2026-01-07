@@ -14,10 +14,10 @@ public interface BeerService {
 
 	BeerDTO insert(BeerDTO beer);
 
-	void update(UUID beerId, BeerDTO beer);
+	Optional<BeerDTO> update(UUID beerId, BeerDTO beer);
 
-	void deleteById(UUID beerId);
+	Boolean deleteById(UUID beerId);
 
-	void patchById(UUID beerId, BeerDTO beer);
+	Optional<BeerDTO> patchById(UUID beerId, BeerDTO beer);
 
 }

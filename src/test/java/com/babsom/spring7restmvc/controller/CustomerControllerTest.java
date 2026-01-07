@@ -83,6 +83,8 @@ class CustomerControllerTest {
 		customerMap.put("firstName", "New Firstname");
 		customerMap.put("lastName", "New Lastname");
 
+		given(service.patchById(any(), any())).willReturn(Optional.of(testObject));
+
 		mockMvc.perform(patch(CustomerController.CUSTOMER_PATH_ID, testObject.getOid()).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(customerMap))).andExpect(status().isNoContent());
 
@@ -96,6 +98,8 @@ class CustomerControllerTest {
 	void testDelete() throws Exception {
 		CustomerDTO testObject = customers.get(0);
 
+		given(service.deleteByOid(any())).willReturn(true);
+		
 		mockMvc.perform(delete(CustomerController.CUSTOMER_PATH_ID, testObject.getOid()).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
 
 		verify(service).deleteByOid(uuidCaptor.capture());
@@ -105,6 +109,8 @@ class CustomerControllerTest {
 	@Test
 	void testUpdate() throws Exception {
 		CustomerDTO testObject = customers.get(0);
+
+		given(service.update(any(), any())).willReturn(Optional.of(testObject));
 
 		mockMvc.perform(put(CustomerController.CUSTOMER_PATH_ID, testObject.getOid()).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(testObject))).andExpect(status().isNoContent());
@@ -120,7 +126,7 @@ class CustomerControllerTest {
 		testObject.setUpdated(null);
 		testObject.setFirstName(testObject.getFirstName() + " - CREATED");
 
-		given(service.create(any(CustomerDTO.class))).willReturn(customers.get(1));
+		given(service.insert(any(CustomerDTO.class))).willReturn(customers.get(1));
 		mockMvc.perform(post(CustomerController.CUSTOMER_PATH).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(testObject))).andExpect(status().isCreated()).andExpect(header().exists("Location"));
 	}

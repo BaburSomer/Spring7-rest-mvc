@@ -92,20 +92,22 @@ class BeerControllerTest {
 
 	@Test
 	void testDelete() throws Exception {
-		BeerDTO testObject = beers.get(0);
+		BeerDTO dto = beers.get(0);
 
-		mockMvc.perform(delete(BeerController.BEER_PATH_ID, testObject.getOid()).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
+		given(service.deleteById(any())).willReturn(true);
+		mockMvc.perform(delete(BeerController.BEER_PATH_ID, dto.getOid()).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
 
 		verify(service).deleteById(uuidCaptor.capture());
-		assertThat(testObject.getOid()).isEqualTo(uuidCaptor.getValue());
+		assertThat(dto.getOid()).isEqualTo(uuidCaptor.getValue());
 	}
 
 	@Test
 	void testUpdate() throws Exception {
-		BeerDTO testObject = beers.get(0);
+		BeerDTO dto = beers.get(0);
 
-		mockMvc.perform(put(BeerController.BEER_PATH_ID, testObject.getOid()).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(testObject))).andExpect(status().isNoContent());
+		given(service.update(any(), any())).willReturn(Optional.of(dto));
+		mockMvc.perform(put(BeerController.BEER_PATH_ID, dto.getOid()).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(dto))).andExpect(status().isNoContent());
 
 		verify(service).update(any(UUID.class), any(BeerDTO.class));
 	}

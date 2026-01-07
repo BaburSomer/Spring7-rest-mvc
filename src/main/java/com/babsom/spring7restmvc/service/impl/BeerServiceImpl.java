@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class BeerServiceImpl implements BeerService {
 
 	private Map<UUID, BeerDTO>      beers;
-
+	
 	public BeerServiceImpl() {
 		this.beers = new HashMap<>();
 
@@ -60,51 +60,57 @@ public class BeerServiceImpl implements BeerService {
 	}
 
 	@Override
-	public void update(UUID beerId, BeerDTO beer) {
-		BeerDTO b = beers.get(beerId);
-		b.setName(beer.getName());
-		b.setPrice(beer.getPrice());
-		b.setQuantityOnHand(beer.getQuantityOnHand());
-		b.setStyle(beer.getStyle());
-		b.setUpc(beer.getUpc());
-		b.setUpdated(LocalDateTime.now());
-		b.setVersion(beer.getVersion());
+	public Optional<BeerDTO> update(UUID beerId, BeerDTO beer) {
+		BeerDTO dto = beers.get(beerId);
+		dto.setName(beer.getName());
+		dto.setPrice(beer.getPrice());
+		dto.setQuantityOnHand(beer.getQuantityOnHand());
+		dto.setStyle(beer.getStyle());
+		dto.setUpc(beer.getUpc());
+		dto.setUpdated(LocalDateTime.now());
+		dto.setVersion(beer.getVersion());
 		this.beers.put(beer.getOid(), beer);
+		
+		return Optional.of(dto);
 	}
 
 	@Override
-	public void deleteById(UUID beerId) {
+	public Boolean deleteById(UUID beerId) {
 		this.beers.remove(beerId);
+		
+		return true;
 	}
 
 	@Override
-	public void patchById(UUID beerId, BeerDTO beer) {
-		BeerDTO b = beers.get(beerId);
+	public Optional<BeerDTO> patchById(UUID beerId, BeerDTO beer) {
+		BeerDTO dto = beers.get(beerId);
 		
 		if (StringUtils.hasText(beer.getName())) {
-			b.setName(beer.getName());
+			dto.setName(beer.getName());
 		}
 		
 		if(beer.getPrice() != null) {
-			b.setPrice(beer.getPrice());
+			dto.setPrice(beer.getPrice());
 		}
 		
 		if(beer.getQuantityOnHand() != null) {
-			b.setQuantityOnHand(beer.getQuantityOnHand());
+			dto.setQuantityOnHand(beer.getQuantityOnHand());
 		}
 		
 		if(beer.getStyle() != null) {
-			b.setStyle(beer.getStyle());
+			dto.setStyle(beer.getStyle());
 		}
 		
 		if (StringUtils.hasText(beer.getUpc())) {
-			b.setUpc(beer.getUpc());
+			dto.setUpc(beer.getUpc());
 		}
 		
-		b.setUpdated(LocalDateTime.now());
+		dto.setUpdated(LocalDateTime.now());
 		
 		if(beer.getVersion() != null) {
-			b.setVersion(beer.getVersion());
+			dto.setVersion(beer.getVersion());
 		}
+		
+		return Optional.of(dto);
 	}
 }

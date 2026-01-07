@@ -14,11 +14,11 @@ public interface CustomerService {
 
 	List<CustomerDTO> listCustomers();
 
-	CustomerDTO create(CustomerDTO customer);
+	CustomerDTO insert(CustomerDTO customer);
 
-	void update(UUID customerId, CustomerDTO customer);
+	Optional<CustomerDTO> update(UUID customerId, CustomerDTO customer);
 
-	void deleteByOid(UUID customerId);
+	Boolean deleteByOid(UUID customerId);
 
-	void patchById(UUID customerId, CustomerDTO customer);
+	Optional<CustomerDTO> patchById(UUID customerId, CustomerDTO customer);
 }

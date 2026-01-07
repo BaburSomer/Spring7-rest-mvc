@@ -8,8 +8,8 @@ import com.babsom.spring7restmvc.model.CustomerDTO;
 @Mapper
 public interface CustomerMapper {
 
-	Customer customerDTO2Customer(CustomerDTO dto);
+	Customer dtoToEntity(CustomerDTO dto);
 	
-	CustomerDTO customer2CustomerDTO(Customer entity);
+	CustomerDTO entityToDto(Customer entity);
 
 }

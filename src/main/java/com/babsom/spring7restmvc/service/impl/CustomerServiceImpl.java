@@ -61,7 +61,7 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public CustomerDTO create(CustomerDTO customer) {
+	public CustomerDTO insert(CustomerDTO customer) {
 		customer.setOid(UUID.randomUUID());
 		customer.setCreated(LocalDateTime.now());
 		this.customersByOid.put(customer.getOid(), customer);
@@ -70,7 +70,7 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public void update(UUID customerId, CustomerDTO customer) {
+	public Optional<CustomerDTO> update(UUID customerId, CustomerDTO customer) {
 		CustomerDTO cust = this.customersByOid.get(customerId);
 		this.customersByFirstName.remove(cust.getFirstName());
 		cust.setFirstName(customer.getFirstName());
@@ -78,16 +78,19 @@ public class CustomerServiceImpl implements CustomerService {
 		cust.setUpdated(LocalDateTime.now());
 		cust.setVersion(customer.getVersion());
 		this.customersByFirstName.put(customer.getFirstName(), cust);
+		
+		return Optional.of(cust);
 	}
 
 	@Override
-	public void deleteByOid(UUID customerId) {
+	public Boolean deleteByOid(UUID customerId) {
 		CustomerDTO cust = this.customersByOid.remove(customerId);
 		this.customersByFirstName.remove(cust.getFirstName());
+		return true;
 	}
 
 	@Override
-	public void patchById(UUID customerId, CustomerDTO customer) {
+	public Optional<CustomerDTO> patchById(UUID customerId, CustomerDTO customer) {
 		CustomerDTO cust = this.customersByOid.get(customerId);
 		this.customersByFirstName.remove(cust.getFirstName());
 
@@ -104,5 +107,7 @@ public class CustomerServiceImpl implements CustomerService {
 		cust.setUpdated(LocalDateTime.now());
 
 		this.customersByFirstName.put(customer.getFirstName(), cust);
+		
+		return Optional.of(cust);
 	}
 }
