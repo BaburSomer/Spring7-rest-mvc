@@ -9,7 +9,7 @@ import com.babsom.spring7restmvc.model.CustomerDTO;
 public interface CustomerMapper {
 
 	Customer dtoToEntity(CustomerDTO dto);
-	
+
 	CustomerDTO entityToDto(Customer entity);
 
 }

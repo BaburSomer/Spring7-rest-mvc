@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,20 +23,34 @@ public class BeerDTO {
 
 	@JsonProperty("oid")
 	private UUID          oid;
+
 	@JsonProperty("version")
 	private Integer       version;
+
 	@JsonProperty("name")
+	@NotNull
+	@NotBlank
 	private String        name;
+
 	@JsonProperty("upc")
+	@NotNull
+	@NotBlank
 	private String        upc;
+
 	@JsonProperty("style")
+	@NotNull
 	private BeerStyle     style;
+
 	@JsonProperty("quantityOnHand")
 	private Integer       quantityOnHand;
+
 	@JsonProperty("price")
+	@NotNull
 	private BigDecimal    price;
+
 	@JsonProperty("created")
 	private LocalDateTime created;
+	
 	@JsonProperty("updated")
 	private LocalDateTime updated;
 

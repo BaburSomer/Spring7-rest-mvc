@@ -13,6 +13,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,14 +40,23 @@ public class Beer {
 	@Version
 	private Integer       version;
 
+	@NotNull
+	@NotBlank
+	@Size(max = 50)
+	@Column(length = 50)
 	private String        name;
 
+	@NotNull
+	@NotBlank
+	@Size(max = 255)
 	private String        upc;
 
+	@NotNull
 	private BeerStyle     style;
 
 	private Integer       quantityOnHand;
 
+	@NotNull
 	private BigDecimal    price;
 
 	private LocalDateTime created;

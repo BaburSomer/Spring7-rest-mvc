@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.babsom.spring7restmvc.model.BeerDTO;
 import com.babsom.spring7restmvc.service.BeerService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,7 +45,7 @@ public class BeerController {
 	}
 	
 	@PostMapping(BEER_PATH)
-	public ResponseEntity<HttpStatus> handlePost(@RequestBody BeerDTO beer) {
+	public ResponseEntity<HttpStatus> handlePost(@Validated @RequestBody BeerDTO beer) {
 		BeerDTO newBeer = service.insert(beer);
 		
 		HttpHeaders headers = new HttpHeaders();
@@ -53,7 +55,7 @@ public class BeerController {
 	}
 	
 	@PutMapping(BEER_PATH_ID)
-	public ResponseEntity<HttpStatus> updateById(@PathVariable("beerId")UUID beerId,  @RequestBody BeerDTO beer) {
+	public ResponseEntity<HttpStatus> updateById(@PathVariable("beerId")UUID beerId,  @Validated  @RequestBody BeerDTO beer) {
 		if (service.update(beerId, beer).isEmpty()) {
 			throw new NotFoundException("Beer with id <<< " + beerId + " >>> not found");
 		}
@@ -69,7 +71,7 @@ public class BeerController {
 	}
 	
 	@PatchMapping(BEER_PATH_ID)
-	public ResponseEntity<HttpStatus> patchById(@PathVariable("beerId")UUID beerId,  @RequestBody BeerDTO beer) {
+	public ResponseEntity<HttpStatus> patchById(@PathVariable("beerId")UUID beerId, @RequestBody @Valid BeerDTO beer) {
 		service.patchById(beerId, beer);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}

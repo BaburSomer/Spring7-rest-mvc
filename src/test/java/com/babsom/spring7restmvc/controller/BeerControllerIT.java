@@ -1,20 +1,31 @@
 package com.babsom.spring7restmvc.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.babsom.spring7restmvc.entity.Beer;
 import com.babsom.spring7restmvc.mapper.BeerMapper;
@@ -22,15 +33,45 @@ import com.babsom.spring7restmvc.model.BeerDTO;
 import com.babsom.spring7restmvc.model.BeerStyle;
 import com.babsom.spring7restmvc.repository.BeerRepository;
 
+import tools.jackson.databind.ObjectMapper;
+
 @SpringBootTest
 class BeerControllerIT {
 
 	@Autowired
-	BeerController controller;
+	BeerController        controller;
 	@Autowired
-	BeerRepository repository;
+	BeerRepository        repository;
 	@Autowired
-	BeerMapper     mapper;
+	BeerMapper            mapper;
+	@Autowired
+	WebApplicationContext wac;
+	@Autowired
+	ObjectMapper          objectMapper;
+	
+	MockMvc mockMvc;
+	
+	@BeforeEach
+	void setUp() {
+		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+	}
+	
+	@Test
+	void testPatchBeerWithBadName() throws Exception {
+		Beer testObject = repository.findAll().get(0);
+
+		Map<String, Object> beerMap = new HashMap<>();
+		beerMap.put("name", "Bomonti-Bomonti-Bomonti-Bomonti-Bomonti-Bomonti-Bomonti-");
+
+		mockMvc.perform(patch(BeerController.BEER_PATH_ID, testObject.getOid())
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(beerMap)))
+				.andExpect(jsonPath("$.length()", is(4)))
+				.andExpect(status().isBadRequest());
+
+	}
+
 
 	@Test
 	void testDeleteByNotExistingId() {
@@ -38,7 +79,7 @@ class BeerControllerIT {
 			controller.deleteById(UUID.randomUUID());
 		});
 	}
-	
+
 	@Rollback
 	@Transactional
 	@Test
@@ -46,34 +87,34 @@ class BeerControllerIT {
 		Beer entity = repository.findAll().get(0);
 
 		ResponseEntity<HttpStatus> response = controller.deleteById(entity.getOid());
-		
+
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(HttpStatus.NO_CONTENT.value()));
-		
+
 		assertThat(repository.findById(entity.getOid()).isEmpty());
 	}
-	
+
 	@Test
 	void testUpdateBeerByNotExistingId() {
 		assertThrows(NotFoundException.class, () -> {
 			controller.updateById(UUID.randomUUID(), BeerDTO.builder().build());
 		});
 	}
-	
+
 	@Rollback
 	@Transactional
 	@Test
 	void testUpdateBeer() {
-		Beer entity = repository.findAll().get(0);
-		BeerDTO dto = mapper.entityToDto(entity);
+		Beer    entity = repository.findAll().get(0);
+		BeerDTO dto    = mapper.entityToDto(entity);
 		dto.setOid(null);
 		dto.setVersion(null);
 		final String beerName = "UPDATED";
 		dto.setName(beerName);
-		
+
 		ResponseEntity<HttpStatus> response = controller.updateById(entity.getOid(), dto);
-		
+
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(HttpStatus.NO_CONTENT.value()));
-		
+
 		Beer beer = repository.findById(entity.getOid()).get();
 		assertThat(beer.getName()).isEqualTo(beerName);
 	}
