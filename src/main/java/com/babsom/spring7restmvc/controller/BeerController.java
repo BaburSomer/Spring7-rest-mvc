@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.babsom.spring7restmvc.model.BeerDTO;
+import com.babsom.spring7restmvc.model.BeerStyle;
 import com.babsom.spring7restmvc.service.BeerService;
 
 import jakarta.validation.Valid;
@@ -34,8 +36,10 @@ public class BeerController {
 	private final BeerService service;
 	
 	@GetMapping(BEER_PATH)
-	public List<BeerDTO> listBeers() {
-		return service.listBeers();
+	public List<BeerDTO> listBeers(@RequestParam(required=false, name="beerName") String beerName, 
+											 @RequestParam(required=false, name="beerStyle") BeerStyle beerStyle,
+											 @RequestParam(required=false, name="showInventory") Boolean showInventory) {
+		return service.listBeers(beerName, beerStyle, showInventory);
 	}
 	
 	@GetMapping(BEER_PATH_ID)

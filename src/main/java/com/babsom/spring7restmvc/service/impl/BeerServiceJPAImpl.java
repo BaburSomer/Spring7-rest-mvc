@@ -9,9 +9,12 @@ import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import com.babsom.spring7restmvc.entity.Beer;
 import com.babsom.spring7restmvc.mapper.BeerMapper;
 import com.babsom.spring7restmvc.model.BeerDTO;
+import com.babsom.spring7restmvc.model.BeerStyle;
 import com.babsom.spring7restmvc.repository.BeerRepository;
 import com.babsom.spring7restmvc.service.BeerService;
 
@@ -31,8 +34,42 @@ public class BeerServiceJPAImpl implements BeerService {
 	}
 
 	@Override
-	public List<BeerDTO> listBeers() {
-		return repository.findAll().stream().map(mapper::entityToDto).collect(Collectors.toList());
+	public List<BeerDTO> listBeers(String beerName, BeerStyle style, Boolean showInventory) {
+		
+		List<Beer> beers;
+		
+		if (StringUtils.hasText(beerName) && style == null) {
+			beers = listBeersByName(beerName);
+		}
+		else if (!StringUtils.hasText(beerName) && style != null) {
+			beers = listBeersByStyle(style);
+		}
+		else if (StringUtils.hasText(beerName) && style != null) {
+			beers = listBeersByNameAndStyle(beerName, style);
+		}
+		else {
+			beers = repository.findAll();
+		}
+		
+		if (showInventory != null && !showInventory) {
+			beers.forEach(beer -> beer.setQuantityOnHand(null));
+		}
+		
+		return beers.stream()
+				.map(mapper::entityToDto)
+				.collect(Collectors.toList());
+	}
+
+	private List<Beer> listBeersByNameAndStyle(String beerName, BeerStyle style) {
+		return repository.findAllByNameIsLikeIgnoreCaseAndStyle("%" + beerName + "%", style);
+	}
+
+	public List<Beer> listBeersByStyle(BeerStyle style) {
+		return repository.findAllByStyle(style);	
+	}
+
+	public List<Beer> listBeersByName(String beerName) {
+		return repository.findAllByNameIsLikeIgnoreCase("%" + beerName + "%");
 	}
 
 	@Override

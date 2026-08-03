@@ -61,7 +61,7 @@ class BeerControllerTest {
 	@BeforeEach
 	void setUp() {
 		serviceImpl = new BeerServiceImpl();
-		beers       = serviceImpl.listBeers();
+		beers       = serviceImpl.listBeers(null, null, null);
 		uuidCaptor  = ArgumentCaptor.forClass(UUID.class);
 		beerCaptor  = ArgumentCaptor.forClass(BeerDTO.class);
 	}
@@ -171,7 +171,7 @@ class BeerControllerTest {
 
 	@Test
 	void testListBeers() throws Exception {
-		given(service.listBeers()).willReturn(beers);
+		given(service.listBeers(null, null, null)).willReturn(beers);
 
 		mockMvc.perform(get(BeerController.BEER_PATH).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.length()", is(beers.size())));

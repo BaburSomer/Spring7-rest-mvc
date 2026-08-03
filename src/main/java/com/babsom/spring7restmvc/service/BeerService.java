@@ -5,12 +5,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.babsom.spring7restmvc.model.BeerDTO;
+import com.babsom.spring7restmvc.model.BeerStyle;
 
 public interface BeerService {
 
 	Optional<BeerDTO> getBeerByOid(UUID oid);
 
-	List<BeerDTO> listBeers();
+	List<BeerDTO> listBeers(String beerName, BeerStyle style, Boolean showInventory);
 
 	BeerDTO insert(BeerDTO beer);
 

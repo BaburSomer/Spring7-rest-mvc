@@ -19,6 +19,7 @@ public class CustomerDTO {
 	private UUID          oid;
 	private String        firstName;
 	private String        lastName;
+	private String        eMail;
 	private Integer       version;
 	private LocalDateTime created;
 	private LocalDateTime updated;
@@ -26,12 +27,13 @@ public class CustomerDTO {
 	@Override
 	public CustomerDTO clone() throws CloneNotSupportedException {
 		CustomerDTO cloned = new CustomerDTO();
-		cloned.setCreated(created);
+		cloned.setOid(oid);
 		cloned.setFirstName(firstName);
 		cloned.setLastName(lastName);
-		cloned.setOid(oid);
-		cloned.setUpdated(updated);
+		cloned.setEMail(eMail);
 		cloned.setVersion(version);
+		cloned.setCreated(created);
+		cloned.setUpdated(updated);
 		return cloned;
 	}
 }
