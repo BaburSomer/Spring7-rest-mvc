@@ -99,7 +99,7 @@ class BeerControllerIT {
        mockMvc.perform(get(BeerController.BEER_PATH)
                        .queryParam("beerStyle", BeerStyle.IPA.name()))
                .andExpect(status().isOk())
-               .andExpect(jsonPath("$.content.size()", is(548)));
+               .andExpect(jsonPath("$.content.size()", is(25)));
    }
 
 	@Test

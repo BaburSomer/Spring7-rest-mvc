@@ -39,8 +39,8 @@ public class BeerController {
 	public Page<BeerDTO> listBeers(@RequestParam(required=false, name="beerName") String beerName, 
 											 @RequestParam(required=false, name="beerStyle") BeerStyle beerStyle,
 											 @RequestParam(required=false, name="showInventory") Boolean showInventory,
-											 /*@RequestParam(required=false, name="pageNumber")*/ Integer pageNumber,
-											 /*@RequestParam(required=false, name="pageSize")*/ Integer pageSize) {
+											 @RequestParam(required=false, name="pageNumber") Integer pageNumber,
+											 @RequestParam(required=false, name="pageSize") Integer pageSize) {
 		return service.listBeers(beerName, beerStyle, showInventory, pageNumber, pageSize);
 	}
 	

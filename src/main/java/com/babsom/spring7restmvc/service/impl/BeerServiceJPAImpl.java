@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -43,13 +44,13 @@ public class BeerServiceJPAImpl implements BeerService {
 		PageRequest pageRequest = this.buildPageRequest(pageNumber, pageSize);
 		
 		if (StringUtils.hasText(beerName) && style == null) {
-			beerPages = listBeersByName(beerName);
+			beerPages = listBeersByName(beerName, pageRequest);
 		}
 		else if (!StringUtils.hasText(beerName) && style != null) {
-			beerPages = listBeersByStyle(style);
+			beerPages = listBeersByStyle(style, pageRequest);
 		}
 		else if (StringUtils.hasText(beerName) && style != null) {
-			beerPages = listBeersByNameAndStyle(beerName, style);
+			beerPages = listBeersByNameAndStyle(beerName, style, pageRequest);
 		}
 		else {
 			beerPages = repository.findAll(pageRequest);
@@ -65,16 +66,16 @@ public class BeerServiceJPAImpl implements BeerService {
 		return beerPages.map(mapper::entityToDto);
 	}
 	
-	private Page<Beer> listBeersByNameAndStyle(String beerName, BeerStyle style) {
-		return repository.findAllByNameIsLikeIgnoreCaseAndStyle("%" + beerName + "%", style, null);
+	private Page<Beer> listBeersByNameAndStyle(String beerName, BeerStyle style, Pageable pageable) {
+		return repository.findAllByNameIsLikeIgnoreCaseAndStyle("%" + beerName + "%", style, pageable);
 	}
 
-	public Page<Beer> listBeersByStyle(BeerStyle style) {
-		return repository.findAllByStyle(style, null);	
+	public Page<Beer> listBeersByStyle(BeerStyle style, Pageable pageable) {
+		return repository.findAllByStyle(style, pageable);	
 	}
 
-	public Page<Beer> listBeersByName(String beerName) {
-		return repository.findAllByNameIsLikeIgnoreCase("%" + beerName + "%", null);
+	public Page<Beer> listBeersByName(String beerName, Pageable pageable) {
+		return repository.findAllByNameIsLikeIgnoreCase("%" + beerName + "%", pageable);
 	}
 
 	@Override
