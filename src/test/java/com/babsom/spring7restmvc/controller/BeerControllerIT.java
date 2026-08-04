@@ -11,7 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -20,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -59,6 +59,19 @@ class BeerControllerIT {
 		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
 	}
 	
+	@Test
+	void testListBeersByStyleAndNameShowInventoryTruePage2() throws Exception {
+		mockMvc.perform(get(BeerController.BEER_PATH)
+				.queryParam("beerName", "IPA")
+				.queryParam("beerStyle", BeerStyle.IPA.name())
+				.queryParam("showInventory", "true")
+				.queryParam("pageNumber", "2")
+				.queryParam("pageSize", "50"))
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$.size()", is(11)))
+		.andExpect(jsonPath("$.content.[0].quantityOnHand").value(IsNull.notNullValue()));
+	}
+	
    @Test
    void testListBeersByStyleAndNameShowInventoryTrue() throws Exception {
        mockMvc.perform(get(BeerController.BEER_PATH)
@@ -66,8 +79,8 @@ class BeerControllerIT {
                        .queryParam("beerStyle", BeerStyle.IPA.name())
                        .queryParam("showInventory", "true"))
                .andExpect(status().isOk())
-               .andExpect(jsonPath("$.size()", is(310)))
-               .andExpect(jsonPath("$.[0].quantityOnHand").value(IsNull.notNullValue()));
+               .andExpect(jsonPath("$.size()", is(11)))
+               .andExpect(jsonPath("$.content.[0].quantityOnHand").value(IsNull.notNullValue()));
    }
 
    @Test
@@ -77,8 +90,8 @@ class BeerControllerIT {
                        .queryParam("beerStyle", BeerStyle.IPA.name())
                        .queryParam("showInventory", "false"))
                .andExpect(status().isOk())
-               .andExpect(jsonPath("$.size()", is(310)))
-               .andExpect(jsonPath("$.[0].quantityOnHand").value(IsNull.nullValue()));
+               .andExpect(jsonPath("$.size()", is(11)))
+               .andExpect(jsonPath("$.content.[0].quantityOnHand").value(IsNull.nullValue()));
    }
 
    @Test
@@ -86,7 +99,7 @@ class BeerControllerIT {
        mockMvc.perform(get(BeerController.BEER_PATH)
                        .queryParam("beerStyle", BeerStyle.IPA.name()))
                .andExpect(status().isOk())
-               .andExpect(jsonPath("$.size()", is(548)));
+               .andExpect(jsonPath("$.content.size()", is(548)));
    }
 
 	@Test
@@ -94,7 +107,7 @@ class BeerControllerIT {
 		mockMvc.perform(get(BeerController.BEER_PATH)
 				.queryParam("beerName", "IPA"))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.size()", is(336)));
+				.andExpect(jsonPath("$.size()", is(11)));
 	}
 	
 	@Test
@@ -102,7 +115,7 @@ class BeerControllerIT {
 		mockMvc.perform(get(BeerController.BEER_PATH)
 				.queryParam("beerStyle", "PORTER"))
 		.andExpect(status().isOk())
-		.andExpect(jsonPath("$.size()", is(68)));
+		.andExpect(jsonPath("$.size()", is(11)));
 	}
 	
 	@Test
@@ -189,9 +202,9 @@ class BeerControllerIT {
 	@Test
 	void testListBeers() {
 //		List<BeerDTO> beers = controller.listBeers(null, null, null);
-		List<BeerDTO> beers = controller.listBeers(any(), any(), any());
+		Page<BeerDTO> beers = controller.listBeers(any(), any(), any(), any(), any());
 
-		assertThat(beers.size()).isEqualTo(2413);
+		assertThat(beers.getContent().size()).isEqualTo(25);
 	}
 
 	@Test
@@ -214,8 +227,8 @@ class BeerControllerIT {
 	@Test
 	void testEmptyList() {
 		repository.deleteAll();
-		List<BeerDTO> beers = controller.listBeers(null, null, null);
+		Page<BeerDTO> beers = controller.listBeers(null, null, null, null, null);
 
-		assertThat(beers.size()).isEqualTo(0);
+		assertThat(beers.getContent().size()).isEqualTo(0);
 	}
 }

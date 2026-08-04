@@ -8,6 +8,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -34,42 +36,45 @@ public class BeerServiceJPAImpl implements BeerService {
 	}
 
 	@Override
-	public List<BeerDTO> listBeers(String beerName, BeerStyle style, Boolean showInventory) {
+	public Page<BeerDTO> listBeers(String beerName, BeerStyle style, Boolean showInventory, Integer pageNumber, Integer pageSize) {
 		
-		List<Beer> beers;
+		Page<Beer> beerPages;
+		
+		PageRequest pageRequest = this.buildPageRequest(pageNumber, pageSize);
 		
 		if (StringUtils.hasText(beerName) && style == null) {
-			beers = listBeersByName(beerName);
+			beerPages = listBeersByName(beerName);
 		}
 		else if (!StringUtils.hasText(beerName) && style != null) {
-			beers = listBeersByStyle(style);
+			beerPages = listBeersByStyle(style);
 		}
 		else if (StringUtils.hasText(beerName) && style != null) {
-			beers = listBeersByNameAndStyle(beerName, style);
+			beerPages = listBeersByNameAndStyle(beerName, style);
 		}
 		else {
-			beers = repository.findAll();
+			beerPages = repository.findAll(pageRequest);
 		}
 		
 		if (showInventory != null && !showInventory) {
-			beers.forEach(beer -> beer.setQuantityOnHand(null));
+			beerPages.forEach(beer -> beer.setQuantityOnHand(null));
 		}
 		
-		return beers.stream()
-				.map(mapper::entityToDto)
-				.collect(Collectors.toList());
+//		return beerPages.stream()
+//				.map(mapper::entityToDto)
+//				.collect(Collectors.toList());
+		return beerPages.map(mapper::entityToDto);
+	}
+	
+	private Page<Beer> listBeersByNameAndStyle(String beerName, BeerStyle style) {
+		return repository.findAllByNameIsLikeIgnoreCaseAndStyle("%" + beerName + "%", style, null);
 	}
 
-	private List<Beer> listBeersByNameAndStyle(String beerName, BeerStyle style) {
-		return repository.findAllByNameIsLikeIgnoreCaseAndStyle("%" + beerName + "%", style);
+	public Page<Beer> listBeersByStyle(BeerStyle style) {
+		return repository.findAllByStyle(style, null);	
 	}
 
-	public List<Beer> listBeersByStyle(BeerStyle style) {
-		return repository.findAllByStyle(style);	
-	}
-
-	public List<Beer> listBeersByName(String beerName) {
-		return repository.findAllByNameIsLikeIgnoreCase("%" + beerName + "%");
+	public Page<Beer> listBeersByName(String beerName) {
+		return repository.findAllByNameIsLikeIgnoreCase("%" + beerName + "%", null);
 	}
 
 	@Override

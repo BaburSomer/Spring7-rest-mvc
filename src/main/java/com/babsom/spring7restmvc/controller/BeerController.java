@@ -1,8 +1,8 @@
 package com.babsom.spring7restmvc.controller;
 
-import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,10 +36,12 @@ public class BeerController {
 	private final BeerService service;
 	
 	@GetMapping(BEER_PATH)
-	public List<BeerDTO> listBeers(@RequestParam(required=false, name="beerName") String beerName, 
+	public Page<BeerDTO> listBeers(@RequestParam(required=false, name="beerName") String beerName, 
 											 @RequestParam(required=false, name="beerStyle") BeerStyle beerStyle,
-											 @RequestParam(required=false, name="showInventory") Boolean showInventory) {
-		return service.listBeers(beerName, beerStyle, showInventory);
+											 @RequestParam(required=false, name="showInventory") Boolean showInventory,
+											 /*@RequestParam(required=false, name="pageNumber")*/ Integer pageNumber,
+											 /*@RequestParam(required=false, name="pageSize")*/ Integer pageSize) {
+		return service.listBeers(beerName, beerStyle, showInventory, pageNumber, pageSize);
 	}
 	
 	@GetMapping(BEER_PATH_ID)

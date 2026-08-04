@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
 
 import com.babsom.spring7restmvc.bootstrap.BootstrapData;
 import com.babsom.spring7restmvc.entity.Beer;
@@ -32,23 +33,23 @@ class BeerRepositoryTest {
 
 	@Test 
 	void testGetBeerListByStyle() {
-		List<Beer> beers = repository.findAllByStyle(BeerStyle.ALE);
+		Page<Beer> beers = repository.findAllByStyle(BeerStyle.ALE, null);
 		
-		assertThat(beers.size()).isEqualTo(400);
+		assertThat(beers.getContent().size()).isEqualTo(400);
 	}
 	
 	@Test 
 	void testGetBeerListByNameAndStyle() {
-		List<Beer> beers = repository.findAllByNameIsLikeIgnoreCaseAndStyle("%IPA%", BeerStyle.ALE);
+		Page<Beer> beers = repository.findAllByNameIsLikeIgnoreCaseAndStyle("%IPA%", BeerStyle.ALE, null);
 		
-		assertThat(beers.size()).isEqualTo(11);
+		assertThat(beers.getContent().size()).isEqualTo(11);
 	}
 	
 	@Test 
 	void testGetBeerListByName() {
-		List<Beer> beers = repository.findAllByNameIsLikeIgnoreCase("%IPA%");
+		Page<Beer> beers = repository.findAllByNameIsLikeIgnoreCase("%IPA%", null);
 		
-		assertThat(beers.size()).isEqualTo(336);
+		assertThat(beers.getContent().size()).isEqualTo(336);
 	}
 	
 	@Test
