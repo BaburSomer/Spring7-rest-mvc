@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import com.babsom.spring7restmvc.model.BeerDTO;
 import com.babsom.spring7restmvc.model.BeerStyle;
@@ -45,8 +46,10 @@ public interface BeerService {
 			}
 			queryPageSize = pageSize;
 		}
+		
+		Sort sort = Sort.by(Sort.Order.asc("name"));
 
-		return PageRequest.of(queryPageNumber, queryPageSize);
+		return PageRequest.of(queryPageNumber, queryPageSize, sort);
 	}
 
 
