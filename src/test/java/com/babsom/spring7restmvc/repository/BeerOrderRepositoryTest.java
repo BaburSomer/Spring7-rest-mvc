@@ -4,8 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.babsom.spring7restmvc.entity.Beer;
+import com.babsom.spring7restmvc.entity.BeerOrder;
 import com.babsom.spring7restmvc.entity.Customer;
 
 @SpringBootTest
@@ -30,13 +32,16 @@ class BeerOrderRepositoryTest {
 		testBeer = beerRepository.findAll().get(3);
 	}
 
+	@Transactional
 	@Test
 	void testBeerOrders() {
-		System.out.println(orderRepository.count());
-		System.out.println(customerRepository.count());
-		System.out.println(beerRepository.count());
-		System.out.println(testCustomer.getFirstName());
-		System.out.println(testBeer.getName());
+		BeerOrder order = BeerOrder.builder()
+									.customerRef("Test Order")
+									.customer(testCustomer)
+									.build();
+		BeerOrder savedOrder = orderRepository.save(order);
+		System.out.println(savedOrder.getCustomerRef());
+		
 	}
 
 }

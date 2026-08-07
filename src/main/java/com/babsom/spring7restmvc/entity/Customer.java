@@ -1,6 +1,7 @@
 package com.babsom.spring7restmvc.entity;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -57,4 +58,11 @@ public class Customer {
 	
 	@OneToMany(mappedBy = "customer")
 	private Set<BeerOrder> orders;
+	
+	public Set<BeerOrder> getOrders() {
+		if (this.orders == null) {
+			this.orders = new HashSet<>();
+		}
+		return this.orders;
+	}
 }

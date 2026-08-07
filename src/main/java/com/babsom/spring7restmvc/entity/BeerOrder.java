@@ -26,7 +26,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
 @Entity(name = "beer_orders")
 public class BeerOrder {
@@ -57,7 +56,24 @@ public class BeerOrder {
 	@UpdateTimestamp
 	private LocalDateTime modified;
 
+	public BeerOrder(UUID oid, String customerRef, Customer customer, Set<BeerOrderLine> orderLines, Long version, LocalDateTime created,
+			LocalDateTime modified) {
+		super();
+		this.oid         = oid;
+		this.customerRef = customerRef;
+		this.setCustomer(customer);
+		this.orderLines  = orderLines;
+		this.version     = version;
+		this.created     = created;
+		this.modified    = modified;
+	}
+	
 	public boolean isNew() {
 		return this.oid == null;
+	}
+	
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+		customer.getOrders().add(this);
 	}
 }
