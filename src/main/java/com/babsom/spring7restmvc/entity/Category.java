@@ -1,6 +1,5 @@
 package com.babsom.spring7restmvc.entity;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,8 +11,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
-import com.babsom.spring7restmvc.model.BeerStyle;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,7 +18,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -39,8 +35,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity(name = "beers")
-public class Beer {
+@Entity(name = "categories")
+public class Category {
 	@Id
 	@GeneratedValue(generator = "UUID")
 	@UuidGenerator
@@ -53,42 +49,16 @@ public class Beer {
 	@Size(max = 50)
 	@Column(length = 50)
 	private String        name;
-
-	@NotNull
-	@NotBlank
-	@Size(max = 255)
-	private String        upc;
-
-	@NotNull
-	private BeerStyle     style;
-
-	private Integer       quantityOnHand;
-
-	@NotNull
-	private BigDecimal    price;
 	
-   @OneToMany(mappedBy = "beer")
-   private Set<BeerOrderLine> orderLines;
-   
 	@ManyToMany
-	@JoinTable(name="beers_categories", joinColumns = @JoinColumn(name="beer_oid"), inverseJoinColumns = @JoinColumn(name="category_oid"))
-	private Set<Category> categories;
+	@JoinTable(name="beers_categories", joinColumns = @JoinColumn(name="category_oid"), inverseJoinColumns = @JoinColumn(name="beer_oid"))
+	private Set<Beer> beers;
 
-	public Set<Category> getCategories() {
-		if (this.categories == null) {
-			this.categories = new HashSet<>();
+	public Set<Beer> getBeers() {
+		if (this.beers == null) {
+			this.beers = new HashSet<>();
 		}
-		return this.categories;
-	}
-
-	public void addCategory(Category category) {
-		this.getCategories().add(category);
-		category.getBeers().add(this);
-	}
-	
-	public void removeCategory(Category category) {
-		this.getCategories().remove(category);
-		category.getBeers().remove(this);
+		return this.beers;
 	}
 	
 	@Version
