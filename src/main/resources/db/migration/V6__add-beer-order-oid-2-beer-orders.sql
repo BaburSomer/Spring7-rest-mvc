@@ -1,0 +1,1 @@
+ALTER TABLE beer_order_lines ADD COLUMN beer_order_oid varchar(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL;

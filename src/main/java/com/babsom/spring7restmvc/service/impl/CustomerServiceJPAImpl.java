@@ -33,7 +33,7 @@ public class CustomerServiceJPAImpl implements CustomerService {
 
 	@Override
 	public Optional<CustomerDTO> getCustomerByFirstName(String firstName) {
-		//TODO repository'i genişletmek gerekli
+		//TODO orderRepository'i genişletmek gerekli
 		return null;
 	}
 
@@ -53,7 +53,7 @@ public class CustomerServiceJPAImpl implements CustomerService {
 		repository.findById(customerId).ifPresentOrElse(found -> {
 			found.setFirstName(customer.getFirstName());
 			found.setLastName(customer.getLastName());
-			found.setUpdated(LocalDateTime.now());
+			found.setModified(LocalDateTime.now());
 			atomicReference.set(Optional.of(mapper.entityToDto(repository.save(found))));
 		}, () -> {
 					atomicReference.set(Optional.empty());
@@ -83,7 +83,7 @@ public class CustomerServiceJPAImpl implements CustomerService {
 			if (StringUtils.hasText(customer.getLastName())) {
 				found.setLastName(customer.getLastName());
 			}
-			found.setUpdated(LocalDateTime.now());
+			found.setModified(LocalDateTime.now());
 			atomicReference.set(Optional.of(mapper.entityToDto(repository.save(found))));
 		}, () -> {
 					atomicReference.set(Optional.empty());

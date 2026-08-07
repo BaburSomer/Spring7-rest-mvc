@@ -1,6 +1,5 @@
 package com.babsom.spring7restmvc.entity;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
@@ -11,68 +10,54 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
-import com.babsom.spring7restmvc.model.BeerStyle;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Version;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity(name = "beers")
-public class Beer {
+@Entity(name = "beer_orders")
+public class BeerOrder {
 	@Id
-	@GeneratedValue(generator = "UUID")
-	@UuidGenerator
+	@GeneratedValue(generator="UUID")
+//	@GenericGenerator(name="UUID", strategy="org.hibernate.id.UUIDGenerator")
+	@UuidGenerator(style = UuidGenerator.Style.RANDOM)
 	@JdbcTypeCode(SqlTypes.CHAR)
-	@Column(name = "oid", length = 36, columnDefinition = "varchar(36)", updatable = false, nullable = false)
-	private UUID          oid;
-
-	@Version
-	private Integer       version;
-
-	@NotNull
-	@NotBlank
-	@Size(max = 50)
-	@Column(length = 50)
-	private String        name;
-
-	@NotNull
-	@NotBlank
-	@Size(max = 255)
-	private String        upc;
-
-	@NotNull
-	private BeerStyle     style;
-
-	private Integer       quantityOnHand;
-
-	@NotNull
-	private BigDecimal    price;
+	@Column(length=36, columnDefinition = "varchar(36)", updatable=false, nullable=false)
+	private UUID oid;
 	
-   @OneToMany(mappedBy = "beer")
+	@Column(length=50, columnDefinition = "varchar(255)")
+	private String customerRef;
+	
+	@ManyToOne
+	private Customer customer;
+	
+   @OneToMany(mappedBy = "beerOrder")
    private Set<BeerOrderLine> orderLines;
 
-
+	@Version
+	private Long       version;
+	
 	@CreationTimestamp
+	@Column(updatable=false)
 	private LocalDateTime created;
 	
 	@UpdateTimestamp
 	private LocalDateTime modified;
+
+	public boolean isNew() {
+		return this.oid == null;
+	}
 }

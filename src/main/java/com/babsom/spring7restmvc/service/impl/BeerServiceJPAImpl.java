@@ -93,7 +93,7 @@ public class BeerServiceJPAImpl implements BeerService {
 			foundBeer.setUpc(dto.getUpc());
 			foundBeer.setPrice(dto.getPrice());
 			foundBeer.setQuantityOnHand(dto.getQuantityOnHand());
-			foundBeer.setUpdated(LocalDateTime.now());
+			foundBeer.setModified(LocalDateTime.now());
 			atomicReference.set(Optional.of(mapper.entityToDto(repository.save(foundBeer))));
 		}, () -> { 
 			atomicReference.set(Optional.empty()); 

@@ -1,0 +1,1 @@
+ALTER TABLE beer_order_lines RENAME COLUMN quantity_allocated TO allocated_quantity;
