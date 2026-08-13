@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.babsom.spring7restmvc.entity.Beer;
 import com.babsom.spring7restmvc.entity.BeerOrder;
+import com.babsom.spring7restmvc.entity.BeerOrderShipment;
 import com.babsom.spring7restmvc.entity.Customer;
 
 @SpringBootTest
@@ -38,6 +39,9 @@ class BeerOrderRepositoryTest {
 		BeerOrder order = BeerOrder.builder()
 									.customerRef("Test Order")
 									.customer(testCustomer)
+									.shipment(BeerOrderShipment.builder()
+											.trackingNumber("546856452")
+											.build())
 									.build();
 		BeerOrder savedOrder = orderRepository.save(order);
 		System.out.println(savedOrder.getCustomerRef());

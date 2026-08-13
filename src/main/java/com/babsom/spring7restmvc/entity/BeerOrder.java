@@ -10,14 +10,15 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Version;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,51 +30,61 @@ import lombok.Setter;
 @Builder
 @Entity(name = "beer_orders")
 public class BeerOrder {
+
 	@Id
-	@GeneratedValue(generator="UUID")
+	@GeneratedValue(generator = "UUID")
 //	@GenericGenerator(name="UUID", strategy="org.hibernate.id.UUIDGenerator")
 	@UuidGenerator(style = UuidGenerator.Style.RANDOM)
 	@JdbcTypeCode(SqlTypes.CHAR)
-	@Column(length=36, columnDefinition = "varchar(36)", updatable=false, nullable=false)
+	@Column(length = 36, columnDefinition = "varchar(36)", updatable = false, nullable = false)
 	private UUID oid;
-	
-	@Column(length=50, columnDefinition = "varchar(255)")
+
+	@Column(length = 50, columnDefinition = "varchar(255)")
 	private String customerRef;
-	
+
 	@ManyToOne
 	private Customer customer;
-	
-   @OneToMany(mappedBy = "beerOrder")
-   private Set<BeerOrderLine> orderLines;
+
+	@OneToMany(mappedBy = "beerOrder")
+	private Set<BeerOrderLine> orderLines;
+
+	@OneToOne(mappedBy = "order", cascade = CascadeType.PERSIST)
+	private BeerOrderShipment shipment;
 
 	@Version
-	private Long       version;
-	
+	private Long version;
+
 	@CreationTimestamp
-	@Column(updatable=false)
+	@Column(updatable = false)
 	private LocalDateTime created;
-	
+
 	@UpdateTimestamp
 	private LocalDateTime modified;
 
-	public BeerOrder(UUID oid, String customerRef, Customer customer, Set<BeerOrderLine> orderLines, Long version, LocalDateTime created,
-			LocalDateTime modified) {
+	public BeerOrder(UUID oid, String customerRef, Customer customer, Set<BeerOrderLine> orderLines, BeerOrderShipment bos, Long version,
+			LocalDateTime created, LocalDateTime modified) {
 		super();
 		this.oid         = oid;
 		this.customerRef = customerRef;
 		this.setCustomer(customer);
-		this.orderLines  = orderLines;
-		this.version     = version;
-		this.created     = created;
-		this.modified    = modified;
+		this.orderLines = orderLines;
+		this.setShipment(bos);
+		this.version    = version;
+		this.created    = created;
+		this.modified   = modified;
 	}
-	
+
 	public boolean isNew() {
 		return this.oid == null;
 	}
-	
+
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
 		customer.getOrders().add(this);
+	}
+	
+	public void setShipment(BeerOrderShipment bos) {
+		this.shipment = bos;
+		bos.setOrder(this);
 	}
 }
