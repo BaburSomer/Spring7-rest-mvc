@@ -85,6 +85,13 @@ public class BeerServiceJPAImpl implements BeerService {
 
 	@Override
 	public Optional<BeerDTO>  update(UUID beerId, BeerDTO dto) {
+		
+		/* to use while testing BeerControllerIT.testUpdateBeerBadVersion() 
+		 * 
+			return Optional.of(mapper.entityToDto(repository.save(mapper.dtoToEntity(dto))));
+		 *
+		*/
+		
 		AtomicReference<Optional<BeerDTO>> atomicReference = new AtomicReference<>();
 		
 		repository.findById(beerId).ifPresentOrElse(foundBeer -> {
@@ -94,6 +101,7 @@ public class BeerServiceJPAImpl implements BeerService {
 			foundBeer.setPrice(dto.getPrice());
 			foundBeer.setQuantityOnHand(dto.getQuantityOnHand());
 			foundBeer.setModified(LocalDateTime.now());
+			foundBeer.setVersion(dto.getVersion());
 			atomicReference.set(Optional.of(mapper.entityToDto(repository.save(foundBeer))));
 		}, () -> { 
 			atomicReference.set(Optional.empty()); 
